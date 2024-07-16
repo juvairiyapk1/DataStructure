@@ -1,0 +1,87 @@
+package Tree;
+
+import java.util.HashMap;
+import java.util.Map;
+public class TrieNode {
+class TrieNode {
+    Map<Character, TrieNode> children;
+    boolean isEndOfWord;
+
+    public TrieNode() {
+        this.children = new HashMap<>();
+        this.isEndOfWord = false;
+    }
+}
+
+class Trie {
+    TrieNode root;
+
+    public Trie() {
+        this.root = new TrieNode();
+    }
+
+    public void insert(String word) {
+        TrieNode node = root;
+        for (char ch : word.toCharArray()) {
+            node.children.putIfAbsent(ch, new TrieNode());
+            node = node.children.get(ch);
+        }
+        node.isEndOfWord = true;
+    }
+
+    public boolean search(String word) {
+        TrieNode node = root;
+        for (char ch : word.toCharArray()) {
+            if (!node.children.containsKey(ch)) {
+                return false;
+            }
+            node = node.children.get(ch);
+        }
+        return node.isEndOfWord;
+    }
+
+    // Add additional methods for auto-suggestions based on the current input
+    // You can explore Trie traversal to find suggestions based on the current input.
+    // For simplicity, let's add a method that returns all words with a given prefix.
+
+    public void suggestWordsWithPrefix(String prefix) {
+        TrieNode node = root;
+        for (char ch : prefix.toCharArray()) {
+            if (!node.children.containsKey(ch)) {
+                System.out.println("No suggestions found for the prefix: " + prefix);
+                return;
+            }
+            node = node.children.get(ch);
+        }
+
+        // Perform DFS to get all words with the given prefix
+        getAllWordsWithPrefix(node, prefix);
+    }
+
+    private void getAllWordsWithPrefix(TrieNode node, String currentPrefix) {
+        if (node.isEndOfWord) {
+            System.out.println(currentPrefix);
+        }
+
+        for (char ch : node.children.keySet()) {
+            getAllWordsWithPrefix(node.children.get(ch), currentPrefix + ch);
+        }
+    }
+}
+
+
+    public static void main(String[] args) {
+        Trie trie = new Trie();
+
+        // Insert some example words into the trie
+        trie.insert("apple");
+        trie.insert("app");
+        trie.insert("banana");
+        trie.insert("bat");
+        trie.insert("batman");
+
+        // Example: Type "ba" and get related strings
+        String input = "ba";
+        trie.suggestWordsWithPrefix(input);
+    }
+}
